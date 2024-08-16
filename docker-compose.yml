@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  azure-functions:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      AzureWebJobsScriptRoot: "/home/site/wwwroot"
+      AzureFunctionsJobHost__Logging__Console__IsEnabled: "true"
+      AzureWebJobsStorage: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRyydlFNV6l+5T6czvE=;"
+      CosmosDbConnectionString: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRyydlFNV6l+5T6czvE=;"
+    depends_on:
+      - cosmosdb
+
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
+    ports:
+      - "8081:8081"
+      - "10250:10250"
+      - "10251:10251"
+      - "10252:10252"
+      - "10253:10253"
+      - "10254:10254"
+    environment:
+      AZURE_COSMOS_EMULATOR_PARTITION_COUNT: "3"
+      AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
+    volumes:
+      - cosmosdbdata:/data
+
+volumes:
+  cosmosdbdata:
+
